@@ -1,4 +1,5 @@
 const Vendor = require("../models/vendor");
+const Product = require("../models/product");
 const formidable = require("formidable");
 const fs = require("fs");
 const { errorHandler } = require("../helpers/dbErrorHandler");
@@ -20,15 +21,26 @@ const _ = require("lodash");
 
 exports.read = (req, res) => {
     Vendor.findById(req.profile._id)
-    .select("-photo")
-    .populate("user", ["name", "email"])
-    .exec((err, vendor) => {
+        .select("-photo")
+        .populate("user", ["name", "email"])
+        .exec((err, vendor) => {
+            if (err) {
+                return res.status(400).json({
+                    error: errorHandler(err)
+                });
+            }
+            res.json(vendor);
+        });
+};
+
+exports.listProducts = (req, res) => {
+    Product.find({ user: req.profile._id }).exec((err, products) => {
         if (err) {
             return res.status(400).json({
                 error: errorHandler(err)
             });
         }
-        res.json(vendor);
+        res.json(products);
     });
 };
 
