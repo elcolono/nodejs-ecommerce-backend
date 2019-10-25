@@ -3,7 +3,10 @@ const { ObjectId } = mongoose.Schema;
 
 const vendorSchema = new mongoose.Schema(
     {
-        user: { type: ObjectId, ref: "User" },
+        user: {
+            type: ObjectId,
+            ref: "User"
+        },
         about: {
             type: String,
             trim: true,
@@ -12,11 +15,10 @@ const vendorSchema = new mongoose.Schema(
         photo: {
             data: Buffer,
             contentType: String
-        },
+        }
         // products: [{ type: ObjectId, ref: "Product" }]
     },
     { timestamps: true }
 );
-
 
 module.exports = mongoose.model("Vendor", vendorSchema);
