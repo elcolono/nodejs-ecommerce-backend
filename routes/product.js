@@ -14,11 +14,11 @@ const {
     photo,
     listSearch
 } = require("../controllers/product");
-const { requireSignin, isAuth, isAdmin } = require("../controllers/auth");
+const { requireSignin, isAuth, isAdmin, isVendor } = require("../controllers/auth");
 const { userById } = require("../controllers/user");
 
 router.get("/product/:productId", read);
-router.post("/product/create/:userId", requireSignin, isAuth, isAdmin, create);
+router.post("/product/create/:userId", requireSignin, isAuth, isVendor, create);
 router.delete(
     "/product/:productId/:userId",
     requireSignin,

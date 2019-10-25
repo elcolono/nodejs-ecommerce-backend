@@ -55,6 +55,7 @@ exports.create = (req, res) => {
             });
         }
 
+        fields.user = req.profile;
         let product = new Product(fields);
 
         // 1kb = 1000

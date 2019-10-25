@@ -3,6 +3,7 @@ const { ObjectId } = mongoose.Schema;
 
 const productSchema = new mongoose.Schema(
     {
+        user: { type: ObjectId, ref: "User" },
         name: {
             type: String,
             trim: true,
