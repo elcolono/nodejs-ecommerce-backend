@@ -4,18 +4,32 @@ const fs = require("fs");
 const { errorHandler } = require("../helpers/dbErrorHandler");
 const _ = require("lodash");
 
-exports.vendorById = (req, res, next, id) => {
-    Vendor.findById(id)
-        .populate("user")
-        .exec((err, vendor) => {
-            if (err || !vendor) {
-                return res.status(400).json({
-                    error: "Vendor not found"
-                });
-            }
-            req.vendor = vendor;
-            next();
-        });
+// exports.vendorById = (req, res, next, id) => {
+//     Vendor.findById(id)
+//         .populate("user")
+//         .exec((err, vendor) => {
+//             if (err || !vendor) {
+//                 return res.status(400).json({
+//                     error: "Vendor not found"
+//                 });
+//             }
+//             req.vendor = vendor;
+//             next();
+//         });
+// };
+
+exports.read = (req, res) => {
+    Vendor.findById(req.profile._id)
+    .select("-photo")
+    .populate("user", ["name", "email"])
+    .exec((err, vendor) => {
+        if (err) {
+            return res.status(400).json({
+                error: errorHandler(err)
+            });
+        }
+        res.json(vendor);
+    });
 };
 
 exports.update = (req, res) => {
@@ -50,7 +64,7 @@ exports.update = (req, res) => {
 
         options = { upsert: true, new: true, setDefaultsOnInsert: true };
         Vendor.findOneAndUpdate(
-            { user: req.profile},
+            { user: req.profile },
             { $set: fields },
             options,
             (err, vendor) => {

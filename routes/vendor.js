@@ -4,12 +4,12 @@ const router = express.Router();
 const { requireSignin, isAuth, isVendor } = require("../controllers/auth");
 
 const { userById } = require("../controllers/user");
-const { create, update, vendorById } = require("../controllers/vendor");
+const { read, update } = require("../controllers/vendor");
 
+router.get("/vendor/:userId", read);
 router.put("/vendor/:userId", requireSignin, isAuth, isVendor, update);
-// router.post("/vendor/:userId", requireSignin, isAuth, isVendor, create);
 
 router.param("userId", userById);
-router.param("vendorId", vendorById);
+// router.param("vendorId", vendorById);
 
 module.exports = router;
