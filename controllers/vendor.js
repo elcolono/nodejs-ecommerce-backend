@@ -70,6 +70,7 @@ exports.update = (req, res) => {
                     error: "Image should be less than 1mb in size"
                 });
             }
+            fields.photo = {};
             fields.photo.data = fs.readFileSync(files.photo.path);
             fields.photo.contentType = files.photo.type;
         }

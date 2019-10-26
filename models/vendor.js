@@ -14,9 +14,8 @@ const vendorSchema = new mongoose.Schema(
         },
         photo: {
             data: Buffer,
-            contentType: String
+            contentType: String,
         }
-        // products: [{ type: ObjectId, ref: "Product" }]
     },
     { timestamps: true }
 );
