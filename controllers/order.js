@@ -17,27 +17,43 @@ exports.orderById = (req, res, next, id) => {
         });
 };
 
-// convert callback `save` function to promise based
-function save(product) {
-    const id = new mongoose.Types.ObjectId();
-    const sale = new Sale({
-        ...product,
-        _id: id
-    });
-    return new Promise((resolve, reject) => {
-        sale.save((err, saved) => {
-            if (err) {
-                reject(err);
-            }
-            resolve(saved);
-        });
-    });
-}
-
 exports.create = async (req, res) => {
-    const products = req.body.order.products;
+    // convert callback `save` function to promise based
+    let savedProducts = [];
+    function save(product) {
+        const id = new mongoose.Types.ObjectId();
+        savedProducts.push(id);
+        const sale = new Sale({
+            ...product,
+            _id: id
+        });
+        return new Promise((resolve, reject) => {
+            sale.save((err, saved) => {
+                if (err) {
+                    reject(err);
+                }
+                resolve(saved);
+            });
+        });
+    }
 
+    function saveOrder() {
+        let order = req.body.order;
+        order.products = savedProducts;
+        order = new Order(order);
+        return new Promise((resolve, reject) => {
+            order.save((err, saved) => {
+                if (err) {
+                    reject(err);
+                }
+                resolve(saved);
+            });
+        });
+    }
+
+    const products = req.body.order.products;
     const promises = products.map(product => save(product));
+    promises.push(saveOrder());
     return Promise.all(promises).then(responses => {
         // all saved processes are finished
         res.json(responses);
