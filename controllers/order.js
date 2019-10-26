@@ -20,7 +20,8 @@ exports.orderById = (req, res, next, id) => {
 exports.create = async (req, res) => {
     // convert callback `save` function to promise based
     let savedProducts = [];
-    function save(product) {
+
+    function saveSales(product) {
         const id = new mongoose.Types.ObjectId();
         savedProducts.push(id);
         const sale = new Sale({
@@ -52,59 +53,13 @@ exports.create = async (req, res) => {
     }
 
     const products = req.body.order.products;
-    const promises = products.map(product => save(product));
+    const promises = products.map(product => saveSales(product));
     promises.push(saveOrder());
     return Promise.all(promises).then(responses => {
         // all saved processes are finished
         res.json(responses);
     });
 };
-
-// exports.create = async (req, res) => {
-
-// let products = [];
-// let order = req.body.order;
-
-// const products = req.body.order.products;
-
-// for (const product of products) {
-//     const sale = new Sale(product);
-//     await sale.save((error, data) => {
-//         if (error) {
-//             return res.status(400).json({
-//                 error: errorHandler(error)
-//             });
-//         }
-//         res.json(data);
-//         // products.push(sale._id);
-//     });
-// }
-
-// order.products.forEach(product => {
-//     const sale = new Sale(product);
-//     sale.save((error, data) => {
-//         if (error) {
-//             return res.status(400).json({
-//                 error: errorHandler(error)
-//             });
-//         }
-//         res.json(data);
-//         // products.push(sale._id);
-//     });
-// });
-// // console.log("CREATE ORDER: ", req.body);
-// order.user = req.profile;
-// order.products = products;
-// order = new Order(order);
-// order.save((error, data) => {
-//     if (error) {
-//         return res.status(400).json({
-//             error: errorHandler(error)
-//         });
-//     }
-//     res.json(data);
-// });
-// };
 
 exports.listOrders = (req, res) => {
     Order.find()
