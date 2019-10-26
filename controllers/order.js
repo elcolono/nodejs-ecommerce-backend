@@ -1,6 +1,7 @@
 const { Order, CartItem } = require("../models/order");
 const { errorHandler } = require("../helpers/dbErrorHandler");
 const Sale = require("../models/sale");
+const mongoose = require("mongoose");
 
 exports.orderById = (req, res, next, id) => {
     Order.findById(id)
@@ -18,7 +19,11 @@ exports.orderById = (req, res, next, id) => {
 
 // convert callback `save` function to promise based
 function save(product) {
-    const sale = new Sale(product);
+    const id = new mongoose.Types.ObjectId();
+    const sale = new Sale({
+        ...product,
+        _id: id
+    });
     return new Promise((resolve, reject) => {
         sale.save((err, saved) => {
             if (err) {
