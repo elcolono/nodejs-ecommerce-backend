@@ -23,14 +23,14 @@ router.delete(
     "/product/:productId/:userId",
     requireSignin,
     isAuth,
-    isAdmin,
+    isVendor,
     remove
 );
 router.put(
     "/product/:productId/:userId",
     requireSignin,
     isAuth,
-    isAdmin,
+    isVendor,
     update
 );
 

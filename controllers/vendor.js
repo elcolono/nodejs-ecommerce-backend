@@ -20,7 +20,7 @@ const _ = require("lodash");
 // };
 
 exports.read = (req, res) => {
-    Vendor.findOne({user: req.profile._id})
+    Vendor.findOne({ user: req.profile._id })
         .select("-photo")
         .populate("user", ["name", "email"])
         .exec((err, vendor) => {
@@ -34,14 +34,17 @@ exports.read = (req, res) => {
 };
 
 exports.listProducts = (req, res) => {
-    Product.find({ user: req.profile._id }).exec((err, products) => {
-        if (err) {
-            return res.status(400).json({
-                error: errorHandler(err)
-            });
-        }
-        res.json(products);
-    });
+    console.log(req.profile._id);
+    Product.find({ vendor: req.profile._id })
+        .select("-photo")
+        .exec((err, products) => {
+            if (err) {
+                return res.status(400).json({
+                    error: errorHandler(err)
+                });
+            }
+            res.json(products);
+        });
 };
 
 exports.update = (req, res) => {
