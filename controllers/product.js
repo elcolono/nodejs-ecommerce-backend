@@ -7,6 +7,7 @@ const { errorHandler } = require("../helpers/dbErrorHandler");
 exports.productById = (req, res, next, id) => {
     Product.findById(id)
         .populate("category")
+        .populate("vendor", ["name", "email"])
         .exec((err, product) => {
             if (err || !product) {
                 return res.status(400).json({
@@ -55,7 +56,7 @@ exports.create = (req, res) => {
             });
         }
 
-        fields.user = req.profile;
+        fields.vendor = req.profile._id;
         let product = new Product(fields);
 
         // 1kb = 1000
@@ -150,6 +151,7 @@ exports.list = (req, res) => {
     Product.find()
         .select("-photo")
         .populate("category")
+        .populate("vendor", ["name", "email"])
         .sort([[sortBy, order]])
         .limit(limit)
         .exec((err, products) => {

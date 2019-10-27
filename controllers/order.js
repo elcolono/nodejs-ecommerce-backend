@@ -1,6 +1,6 @@
-const { Order, CartItem } = require("../models/order");
+const OrderBuyer = require("../models/orderBuyer");
+const OrderVendor = require("../models/orderVendor");
 const { errorHandler } = require("../helpers/dbErrorHandler");
-const Sale = require("../models/sale");
 const mongoose = require("mongoose");
 
 exports.orderById = (req, res, next, id) => {
@@ -18,18 +18,42 @@ exports.orderById = (req, res, next, id) => {
 };
 
 exports.create = async (req, res) => {
-    // convert callback `save` function to promise based
-    let savedProducts = [];
+    // Reveived orderData:
+    // {
+    //     buyer: userId,
+    //     amount: response.transaction.amount,
+    //     address: deliveryAddress,
+    //     transaction_id: response.transaction.id,
+    //     productsByVendor: productsByVendor
+    // }
 
-    function saveSales(product) {
+    const {
+        buyer,
+        amount,
+        address,
+        transaction_id,
+        productsByVendor
+    } = req.body.orderData;
+
+    let savedVendorOrders = [];
+
+    function saveOrderForVendor(product) {
+        const orderVendorData = {
+            vendor: product.vendor._id,
+            buyer: buyer,
+            products: product.products,
+            address: address,
+            transaction_id: transaction_id
+        };
+
         const id = new mongoose.Types.ObjectId();
-        savedProducts.push(id);
-        const sale = new Sale({
-            ...product,
+        savedVendorOrders.push(id);
+        const orderVendor = new OrderVendor({
+            ...orderVendorData,
             _id: id
         });
         return new Promise((resolve, reject) => {
-            sale.save((err, saved) => {
+            orderVendor.save((err, saved) => {
                 if (err) {
                     reject(err);
                 }
@@ -38,12 +62,18 @@ exports.create = async (req, res) => {
         });
     }
 
-    function saveOrder() {
-        let order = req.body.order;
-        order.products = savedProducts;
-        order = new Order(order);
+    function saveOrderForBuyer() {
+        const orderBuyerData = {
+            buyer: buyer,
+            products: savedVendorOrders,
+            transaction_id: transaction_id,
+            amount: amount,
+            address: address,
+        };
+
+        orderBuyer = new OrderBuyer(orderBuyerData);
         return new Promise((resolve, reject) => {
-            order.save((err, saved) => {
+            orderBuyer.save((err, saved) => {
                 if (err) {
                     reject(err);
                 }
@@ -52,9 +82,8 @@ exports.create = async (req, res) => {
         });
     }
 
-    const products = req.body.order.products;
-    const promises = products.map(product => saveSales(product));
-    promises.push(saveOrder());
+    const promises = productsByVendor.map(product => saveOrderForVendor(product));
+    promises.push(saveOrderForBuyer());
     return Promise.all(promises).then(responses => {
         // all saved processes are finished
         res.json(responses);

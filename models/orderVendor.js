@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const { ObjectId } = mongoose.Schema;
 
-const ItemSchema = new mongoose.Schema(
+const ProductSchema = new mongoose.Schema(
     {
         product: { type: ObjectId, ref: "Product" },
         name: String,
@@ -12,12 +12,15 @@ const ItemSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-const saleSchema = new mongoose.Schema(
+const OrderVendorSchema = new mongoose.Schema(
     {
         vendor: { type: ObjectId, ref: "User" },
         buyer: { type: ObjectId, ref: "User" },
-        items: [ItemSchema],
+        products: [ProductSchema],
         amount: Number,
+        address: String,
+        transaction_id: String,
+
         status: {
             type: String,
             default: "Not processed",
@@ -30,9 +33,8 @@ const saleSchema = new mongoose.Schema(
             ] // enum means string objects
         },
         updated: Date,
-        address: String
     },
     { timestamps: true }
 );
 
-module.exports = mongoose.model("Sale", saleSchema);
+module.exports = mongoose.model("OrderVendor", OrderVendorSchema);
