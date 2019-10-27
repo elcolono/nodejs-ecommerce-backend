@@ -9,7 +9,7 @@ const OrderBuyerSchema = new mongoose.Schema(
     products: [{ type: ObjectId, ref: "orderVendor" }],
     transaction_id: String,
     amount: Number,
-    address: String,
+    address: { type: String, required: true },
     updated: Date,
   },
   { timestamps: true }

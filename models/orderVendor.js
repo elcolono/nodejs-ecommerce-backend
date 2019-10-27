@@ -18,7 +18,7 @@ const OrderVendorSchema = new mongoose.Schema(
         buyer: { type: ObjectId, ref: "User" },
         products: [ProductSchema],
         amount: Number,
-        address: String,
+        address: { type: String, required: true },
         transaction_id: String,
         status: {
             type: String,
@@ -31,7 +31,7 @@ const OrderVendorSchema = new mongoose.Schema(
                 "Cancelled"
             ] // enum means string objects
         },
-        updated: Date,
+        updated: Date
     },
     { timestamps: true }
 );
