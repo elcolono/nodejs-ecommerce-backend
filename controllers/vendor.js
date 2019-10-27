@@ -20,7 +20,7 @@ const _ = require("lodash");
 // };
 
 exports.read = (req, res) => {
-    Vendor.findById(req.profile._id)
+    Vendor.findOne({user: req.profile._id})
         .select("-photo")
         .populate("user", ["name", "email"])
         .exec((err, vendor) => {

@@ -20,7 +20,6 @@ const OrderVendorSchema = new mongoose.Schema(
         amount: Number,
         address: String,
         transaction_id: String,
-
         status: {
             type: String,
             default: "Not processed",
