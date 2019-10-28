@@ -36,14 +36,12 @@ exports.create = async (req, res) => {
     } = req.body.orderData;
 
     let savedVendorOrders = [];
-    let totalVendorsAmounts = 0;
 
     function getTotalAmount(products) {
         var totalAmount = 0;
         products.map(product => {
             totalAmount += product.price * product.count;
         });
-        totalVendorsAmounts += totalAmount;
         return totalAmount;
     }
 
@@ -99,7 +97,6 @@ exports.create = async (req, res) => {
     promises.push(saveOrderForBuyer());
     return Promise.all(promises).then(responses => {
         // all saved processes are finished
-        console.log(totalVendorsAmounts);
         res.json(responses);
     });
 };
