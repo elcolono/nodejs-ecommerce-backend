@@ -12,13 +12,27 @@ const ProductSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
+const BillingAddress = new mongoose.Schema(
+    {
+        firstname: { type: String, required: true },
+        lastname: { type: String, required: true },
+        company: String,
+        addressline1: { type: String, required: true },
+        addressline2: String,
+        state: { type: String, required: true },
+        postcode: { type: String, required: true },
+        country: { type: String, required: true },
+    },  
+    { timestamps: true }
+);
+
 const OrderVendorSchema = new mongoose.Schema(
     {
         vendor: { type: ObjectId, ref: "User" },
         buyer: { type: ObjectId, ref: "User" },
         products: [ProductSchema],
         amount: Number,
-        address: { type: String, required: true },
+        billing: BillingAddress,
         transaction_id: String,
         status: {
             type: String,

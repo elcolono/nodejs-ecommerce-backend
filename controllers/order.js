@@ -30,7 +30,7 @@ exports.create = async (req, res) => {
     const {
         buyer,
         amount,
-        address,
+        billing,
         transaction_id,
         productsByVendor
     } = req.body.orderData;
@@ -50,7 +50,7 @@ exports.create = async (req, res) => {
             vendor: product.vendor._id,
             buyer: buyer,
             products: product.products,
-            address: address,
+            billing: billing,
             transaction_id: transaction_id,
             amount: getTotalAmount(product.products)
         };
@@ -77,7 +77,7 @@ exports.create = async (req, res) => {
             products: savedVendorOrders,
             transaction_id: transaction_id,
             amount: amount,
-            address: address
+            billing: billing
         };
 
         orderBuyer = new OrderBuyer(orderBuyerData);
