@@ -4,9 +4,10 @@ const router = express.Router();
 const { requireSignin, isAuth, isVendor } = require("../controllers/auth");
 
 const { userById } = require("../controllers/user");
-const { read, update, listProducts } = require("../controllers/vendor");
+const { read, update, listProducts, list } = require("../controllers/vendor");
 
 router.get("/vendor/:userId", read);
+router.get("/vendors", list);
 router.put("/vendor/:userId", requireSignin, isAuth, isVendor, update);
 router.get("/vendor/products/:userId", listProducts);
 

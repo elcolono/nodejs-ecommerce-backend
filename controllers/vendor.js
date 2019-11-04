@@ -33,6 +33,19 @@ exports.read = (req, res) => {
         });
 };
 
+exports.list = (req, res) => {
+    Vendor.find()
+        .select("-photo")
+        .exec((err, data) => {
+            if (err) {
+                return res.status(400).json({
+                    error: errorHandler(err)
+                });
+            }
+            res.json(data);
+        });
+};
+
 exports.listProducts = (req, res) => {
     console.log(req.profile._id);
     Product.find({ vendor: req.profile._id })

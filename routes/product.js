@@ -16,6 +16,7 @@ const {
 } = require("../controllers/product");
 const { requireSignin, isAuth, isAdmin, isVendor } = require("../controllers/auth");
 const { userById } = require("../controllers/user");
+const { categoryBySlugId } = require("../controllers/category");
 
 router.get("/product/:productId", read);
 router.post("/product/create/:userId", requireSignin, isAuth, isVendor, create);
@@ -35,13 +36,15 @@ router.put(
 );
 
 router.get("/products", list);
-router.get("/products/search", listSearch);
 router.get("/products/related/:productId", listRelated);
 router.get("/products/categories", listCategories);
-router.post("/products/by/search", listBySearch);
+router.get("/products/search", listSearch);
+router.post("/products/by/search/:categorySlugId", listBySearch);
 router.get("/product/photo/:productId", photo);
 
 router.param("userId", userById);
 router.param("productId", productById);
+router.param("categorySlugId", categoryBySlugId);
+
 
 module.exports = router;

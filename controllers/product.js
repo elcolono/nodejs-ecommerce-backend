@@ -229,6 +229,9 @@ exports.listBySearch = (req, res) => {
         }
     }
 
+    findArgs.category = req.category._id;
+    console.log(req.category);
+
     Product.find(findArgs)
         .select("-photo")
         .populate("category")
