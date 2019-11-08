@@ -33,6 +33,22 @@ exports.read = (req, res) => {
         });
 };
 
+exports.photo = (req, res) => {
+    Vendor.findOne({ user: req.profile._id })
+        .select("photo")
+        .exec((err, vendor) => {
+            if (err) {
+                return res.status(400).json({
+                    error: errorHandler(err)
+                });
+            }
+            if (vendor.photo.data) {
+                res.set("Content-Type", vendor.photo.contentType);
+                return res.send(vendor.photo.data);
+            }
+        });
+};
+
 exports.list = (req, res) => {
     Vendor.find()
         .select("-photo")
