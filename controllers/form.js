@@ -27,3 +27,31 @@ exports.contactForm = (req, res) => {
         });
     });
 };
+
+exports.contactVendorForm = (req, res) => {
+    const { vendorEmail, email, name, message } = req.body;
+
+    let maillist = [vendorEmail, process.env.EMAIL_TO];
+
+    const emailData = {
+        to: maillist,
+        from: email,
+        subject: `Someone messaged you from ${process.env.APP_NAME}`,
+        text: `Email received from contact from \n Sender name: ${name} \n Sender email: ${email} \n Sender message: ${message}`,
+        html: `
+            <h4>Message received form:</h4>
+            <p>Name: ${name}</p>
+            <p>Email: ${email}</p>
+            <p>Message: ${message}</p>
+            <hr />
+            <p>This email may contain sensetive information</p>
+            <p>https://seoblog.com</p>
+        `
+    };
+
+    sgMail.send(emailData).then(sent => {
+        return res.json({
+            success: true
+        });
+    });
+};
