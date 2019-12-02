@@ -18,22 +18,8 @@ exports.orderById = (req, res, next, id) => {
 };
 
 exports.create = async (req, res) => {
-    // Reveived orderData:
-    // {
-    //     buyer: userId,
-    //     amount: response.transaction.amount,
-    //     address: deliveryAddress,
-    //     transaction_id: response.transaction.id,
-    //     productsByVendor: productsByVendor
-    // }
-
-    const {
-        buyer,
-        amount,
-        billing,
-        transaction_id,
-        productsByVendor
-    } = req.body.orderData;
+    // console.log(req.body);
+    const { guest, buyer, amount, billing, transactionId, products } = req.body;
 
     let savedVendorOrders = [];
 
@@ -45,14 +31,37 @@ exports.create = async (req, res) => {
         return totalAmount;
     }
 
-    function saveOrderForVendor(product) {
+    function sortProductsByVendors(products) {
+        // Sort orders by vendors
+        const productsByVendor = [];
+
+        products.map(item => {
+            let found = productsByVendor.find((o, i) => {
+                if (o.vendor._id === item.vendor._id) {
+                    productsByVendor[i].products.push(item);
+                    return true; // stop searching
+                }
+            });
+            if (!found) {
+                const createOrderData = {
+                    vendor: item.vendor,
+                    products: [item]
+                };
+                productsByVendor.push(createOrderData);
+            }
+        });
+        return productsByVendor;
+    }
+
+    function saveOrderForVendor(item) {
         const orderVendorData = {
-            vendor: product.vendor._id,
+            vendor: item.vendor._id,
             buyer: buyer,
-            products: product.products,
+            guest: guest,
+            products: item.products,
             billing: billing,
-            transaction_id: transaction_id,
-            amount: getTotalAmount(product.products)
+            transactionId: transactionId,
+            amount: getTotalAmount(item.products)
         };
 
         const id = new mongoose.Types.ObjectId();
@@ -64,7 +73,7 @@ exports.create = async (req, res) => {
         return new Promise((resolve, reject) => {
             orderVendor.save((err, saved) => {
                 if (err) {
-                    reject(err);
+                    resolve(err);
                 }
                 resolve(saved);
             });
@@ -91,10 +100,10 @@ exports.create = async (req, res) => {
         });
     }
 
-    const promises = productsByVendor.map(product =>
-        saveOrderForVendor(product)
+    const promises = sortProductsByVendors(products).map(item =>
+        saveOrderForVendor(item)
     );
-    promises.push(saveOrderForBuyer());
+    // promises.push(saveOrderForBuyer());
     return Promise.all(promises).then(responses => {
         // all saved processes are finished
         res.json(responses);

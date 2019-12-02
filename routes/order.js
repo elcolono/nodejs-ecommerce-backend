@@ -21,6 +21,12 @@ router.post(
     // decreaseQuantity,
     create
 );
+router.post(
+    "/order/create/",
+    // addOrderToUserHistory,
+    // decreaseQuantity,
+    create
+);
 
 router.get("/order/list/:userId", requireSignin, isAuth, isAdmin, listOrders);
 router.get("/order/vendor/list/:userId", requireSignin, isAuth, isVendor, listOrdersVendor);

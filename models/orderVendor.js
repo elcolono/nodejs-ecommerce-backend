@@ -19,6 +19,7 @@ const OrderVendorSchema = new mongoose.Schema(
         products: [ProductSchema],
         amount: Number,
         earning: Number,
+        guest: Boolean,
         billing: {
             firstname: { type: String, required: true },
             lastname: { type: String, required: true },
