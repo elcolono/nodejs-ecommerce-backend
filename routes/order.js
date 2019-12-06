@@ -9,7 +9,8 @@ const {
     getStatusValues,
     orderById,
     updateOrderStatus,
-    listOrdersVendor
+    listOrdersVendor,
+    readVendorOrder
 } = require("../controllers/order");
 const { decreaseQuantity } = require("../controllers/product");
 
@@ -29,6 +30,7 @@ router.post(
 );
 
 router.get("/order/list/:userId", requireSignin, isAuth, isAdmin, listOrders);
+router.get("/order/vendor/:userId/:orderId", requireSignin, isAuth, isVendor, readVendorOrder);
 router.get("/order/vendor/list/:userId", requireSignin, isAuth, isVendor, listOrdersVendor);
 router.get(
     "/order/status-values/:userId",

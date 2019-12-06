@@ -17,6 +17,10 @@ exports.orderById = (req, res, next, id) => {
         });
 };
 
+exports.readVendorOrder = (req, res) => {
+    res.json(req.order);
+};
+
 exports.create = async (req, res) => {
     // console.log(req.body);
     const { guest, buyer, amount, billing, transactionId, products } = req.body;

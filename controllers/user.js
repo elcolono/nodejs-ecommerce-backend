@@ -20,6 +20,19 @@ exports.read = (req, res) => {
     return res.json(req.profile);
 };
 
+exports.list = (req, res) => {
+    User.find()
+        .select("name email role")
+        .exec((err, data) => {
+            if (err) {
+                return res.status(400).json({
+                    error: errorHandler(err)
+                });
+            }
+            res.json(data);
+        });
+};
+
 exports.update = (req, res) => {
     User.findOneAndUpdate(
         { _id: req.profile._id },

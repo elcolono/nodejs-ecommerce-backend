@@ -29,6 +29,11 @@ exports.signin = (req, res) => {
                 error: "User with that email does not exist. Please signup"
             });
         }
+        if (req.params.role == "vendor" && user.role !== 1) {
+            return res.status(401).json({
+                error: "Sorry, you have no Vendor Permissions. Please register!"
+            });
+        }
         // if user is found make sure the email and password match
         // create authenticate method in user model
         if (!user.authenticate(password)) {
