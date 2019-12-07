@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const {
+    preSignup,
     signup,
     signin,
     signout,
@@ -18,8 +19,9 @@ const {
     resetPasswordValidator
 } = require("../validator/auth");
 
+router.post('/pre-signup', userSignupValidator, runValidation, preSignup);
 router.post("/signup", userSignupValidator, runValidation, signup);
-router.post("/signin/:role", userSigninValidator, runValidation, signin);
+router.post("/signin", userSigninValidator, runValidation, signin);
 router.get("/signout", signout);
 router.put(
     "/forgot-password",

@@ -7,6 +7,37 @@ const _ = require('lodash');
 const sgMail = require('@sendgrid/mail'); // SENDGRID_API_KEY
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
+exports.preSignup = (req, res) => {
+    const { name, email, password } = req.body;
+    User.findOne({ email: email.toLowerCase() }, (err, user) => {
+        if (user) {
+            return res.status(400).json({
+                error: 'Email is taken'
+            });
+        }
+        const token = jwt.sign({ name, email, password }, process.env.JWT_ACCOUNT_ACTIVATION, { expiresIn: '10m' });
+
+        const emailData = {
+            from: process.env.EMAIL_FROM,
+            to: email,
+            subject: `Account activation link`,
+            html: `
+            <p>Please use the following link to activate your acccount:</p>
+            <p>${process.env.CLIENT_URL}/auth/activate/${token}</p>
+            <hr />
+            <p>This email may contain sensetive information</p>
+            <p>https://seoblog.com</p>
+        `
+        };
+
+        sgMail.send(emailData).then(sent => {
+            return res.json({
+                message: `Email has been sent to ${email}. Follow the instructions to activate your account.`
+            });
+        });
+    });
+};
+
 exports.signup = (req, res) => {
     // console.log("req.body", req.body);
     const user = new User(req.body);
@@ -33,11 +64,11 @@ exports.signin = (req, res) => {
                 error: "User with that email does not exist. Please signup"
             });
         }
-        if (req.params.role == "vendor" && user.role !== 1) {
-            return res.status(401).json({
-                error: "Sorry, you have no Vendor Permissions. Please register!"
-            });
-        }
+        // if (req.params.role == "vendor" && user.role !== 1) {
+        //     return res.status(401).json({
+        //         error: "Sorry, you have no Vendor Permissions. Please register!"
+        //     });
+        // }
         // if user is found make sure the email and password match
         // create authenticate method in user model
         if (!user.authenticate(password)) {

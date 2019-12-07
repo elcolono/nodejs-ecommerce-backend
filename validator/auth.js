@@ -29,9 +29,7 @@ exports.userSignupValidator = [
         .withMessage("Confirm password must be at least 6 characters long")
         .custom((value, { req }) => {
             if (value !== req.body.password) {
-                throw new Error(
-                    "Password confirmation does not match password"
-                );
+                throw new Error("Password confirmation does not match password");
             }
             // Indicates the success of this synchronous custom validator
             return true;
@@ -40,9 +38,15 @@ exports.userSignupValidator = [
 
 exports.userSigninValidator = [
     check("email")
+        .not()
+        .isEmpty()
+        .withMessage("Email is required")
         .isEmail()
         .withMessage("Must be a valid email address"),
     check("password")
+        .not()
+        .isEmpty()
+        .withMessage("Password is required")
         .isLength({ min: 6 })
         .withMessage("Password must be at least 6 characters long")
 ];
