@@ -2,9 +2,11 @@ const express = require("express");
 const router = express.Router();
 const { contactForm, contactVendorForm } = require("../controllers/form");
 
-const { contactFormValidator } = require("../validator/contactForm");
+// validators
+const { runValidation } = require('../validator');
+const { contactFormValidator } = require("../validator/form");
 
-router.post("/contact", contactFormValidator, contactForm);
-router.post("/contact-vendor", contactFormValidator, contactVendorForm);
+router.post("/contact", contactFormValidator, runValidation, contactForm);
+router.post("/contact-vendor", contactFormValidator, runValidation, contactVendorForm);
 
 module.exports = router;
