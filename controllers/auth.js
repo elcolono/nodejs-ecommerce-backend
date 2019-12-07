@@ -115,7 +115,7 @@ exports.forgotPassword = (req, res) => {
             subject: `Password reset link`,
             html: `
             <p>Please use the following link to reset your password:</p>
-            <p>${process.env.CLIENT_URL}/auth/password/reset/${token}</p>
+            <p>${process.env.CLIENT_URL}/auth/reset/${token}</p>
             <hr />
             <p>This email may contain sensetive information</p>
             <p>https://seoblog.com</p>
