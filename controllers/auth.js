@@ -52,7 +52,8 @@ exports.signup = (req, res) => {
             user.save((err, user) => {
                 if (err) {
                     return res.status(400).json({
-                        error: "Your Account could not be activated. Please signup again."
+                        error:
+                            err.code == 11000 ? "This Account has already been activated." : "Something went wrong. Please sign up again."
                     });
                 }
                 // user.salt = undefined;
