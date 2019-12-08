@@ -2,20 +2,20 @@ const User = require("../models/user");
 const jwt = require("jsonwebtoken"); // to generate signed token
 const expressJwt = require("express-jwt"); // for authorization check
 const { errorHandler } = require("../helpers/dbErrorHandler");
-const _ = require('lodash');
+const _ = require("lodash");
 // sendgrid
-const sgMail = require('@sendgrid/mail'); // SENDGRID_API_KEY
+const sgMail = require("@sendgrid/mail"); // SENDGRID_API_KEY
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 exports.preSignup = (req, res) => {
-    const { name, email, password } = req.body;
+    const { firstname, lastname, email, password } = req.body;
     User.findOne({ email: email.toLowerCase() }, (err, user) => {
         if (user) {
             return res.status(400).json({
-                error: 'Email is taken'
+                error: "Email is taken"
             });
         }
-        const token = jwt.sign({ name, email, password }, process.env.JWT_ACCOUNT_ACTIVATION, { expiresIn: '10m' });
+        const token = jwt.sign({ firstname, lastname, email, password }, process.env.JWT_ACCOUNT_ACTIVATION, { expiresIn: "10m" });
 
         const emailData = {
             from: process.env.EMAIL_FROM,
@@ -39,20 +39,35 @@ exports.preSignup = (req, res) => {
 };
 
 exports.signup = (req, res) => {
-    // console.log("req.body", req.body);
-    const user = new User(req.body);
-    user.save((err, user) => {
-        if (err) {
-            return res.status(400).json({
-                error: errorHandler(err)
+    const token = req.body.token;
+    if (token) {
+        jwt.verify(token, process.env.JWT_ACCOUNT_ACTIVATION, function(err, decoded) {
+            if (err) {
+                return res.status(401).json({
+                    error: "Expired link. Please signup again."
+                });
+            }
+            const { firstname, lastname, email, password } = jwt.decode(token);
+            const user = new User({ firstname, lastname, email, password });
+            user.save((err, user) => {
+                if (err) {
+                    return res.status(400).json({
+                        error: "Your Account could not be activated. Please signup again."
+                    });
+                }
+                // user.salt = undefined;
+                // user.hashed_password = undefined;
+                res.json({
+                    email,
+                    password
+                });
             });
-        }
-        user.salt = undefined;
-        user.hashed_password = undefined;
-        res.json({
-            user
         });
-    });
+    } else {
+        return res.json({
+            error: "Something went wrong. Try again."
+        });
+    }
 };
 
 exports.signin = (req, res) => {
@@ -76,8 +91,8 @@ exports.signin = (req, res) => {
                 error: "Email and password dont match"
             });
         }
-        const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: '3600' });
-        res.cookie('token', token, { expiresIn: '3600' });
+        const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: "3600" });
+        res.cookie("token", token, { expiresIn: "3600" });
 
         const { _id, firstname, lastname, email, role } = user;
         return res.json({
@@ -133,11 +148,11 @@ exports.forgotPassword = (req, res) => {
     User.findOne({ email }, (err, user) => {
         if (err || !user) {
             return res.status(401).json({
-                error: 'User with that email does not exist'
+                error: "User with that email does not exist"
             });
         }
 
-        const token = jwt.sign({ _id: user._id }, process.env.JWT_RESET_PASSWORD, { expiresIn: '10m' });
+        const token = jwt.sign({ _id: user._id }, process.env.JWT_RESET_PASSWORD, { expiresIn: "10m" });
 
         // email
         const emailData = {
@@ -174,18 +189,18 @@ exports.resetPassword = (req, res) => {
         jwt.verify(resetPasswordLink, process.env.JWT_RESET_PASSWORD, function(err, decoded) {
             if (err) {
                 return res.status(401).json({
-                    error: 'Expired link. Try again'
+                    error: "Expired link. Try again"
                 });
             }
             User.findOne({ resetPasswordLink }, (err, user) => {
                 if (err || !user) {
                     return res.status(401).json({
-                        error: 'Something went wrong. Try later'
+                        error: "Something went wrong. Try later"
                     });
                 }
                 const updatedFields = {
                     password: newPassword,
-                    resetPasswordLink: ''
+                    resetPasswordLink: ""
                 };
 
                 user = _.extend(user, updatedFields);
@@ -204,4 +219,3 @@ exports.resetPassword = (req, res) => {
         });
     }
 };
-
