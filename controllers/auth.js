@@ -50,7 +50,8 @@ exports.signup = (req, res) => {
                 });
             }
             const { firstname, lastname, email, password } = jwt.decode(token);
-            const user = new User({ firstname, lastname, email, password });
+            const userId = shortId.generate();
+            const user = new User({ userId, firstname, lastname, email, password });
             user.save((err, user) => {
                 if (err) {
                     return res.status(400).json({
@@ -60,9 +61,14 @@ exports.signup = (req, res) => {
                 }
                 // user.salt = undefined;
                 // user.hashed_password = undefined;
-                res.json({
-                    email,
-                    password
+                const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: "3600" });
+                res.cookie("token", token, { expiresIn: "3600" });
+
+                const { _id, firstname, lastname, email, role } = user;
+                return res.json({
+                    token,
+                    user: { _id, firstname, lastname, email, role },
+                    expiresIn: 3600
                 });
             });
         });
@@ -82,13 +88,6 @@ exports.signin = (req, res) => {
                 error: "User with that email does not exist. Please signup"
             });
         }
-        // if (req.params.role == "vendor" && user.role !== 1) {
-        //     return res.status(401).json({
-        //         error: "Sorry, you have no Vendor Permissions. Please register!"
-        //     });
-        // }
-        // if user is found make sure the email and password match
-        // create authenticate method in user model
         if (!user.authenticate(password)) {
             return res.status(401).json({
                 error: "Email and password dont match"
@@ -127,7 +126,7 @@ exports.googleLogin = (req, res) => {
                         expiresIn: 3600
                     });
                 } else {
-                    let userId = shortId.generate();
+                    const userId = shortId.generate();
                     // let profile = `${process.env.CLIENT_URL}/profile/${username}`;
                     const password = jti;
                     const firstname = given_name;
