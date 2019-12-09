@@ -32,20 +32,8 @@ router.post(
 router.get("/order/list/:userId", requireSignin, isAuth, isAdmin, listOrders);
 router.get("/order/vendor/:userId/:orderId", requireSignin, isAuth, isVendor, readVendorOrder);
 router.get("/order/vendor/list/:userId", requireSignin, isAuth, isVendor, listOrdersVendor);
-router.get(
-    "/order/status-values/:userId",
-    requireSignin,
-    isAuth,
-    isVendor,
-    getStatusValues
-);
-router.put(
-    "/order/:orderId/status/:userId",
-    requireSignin,
-    isAuth,
-    isVendor,
-    updateOrderStatus
-);
+router.get("/order/status-values/:userId", requireSignin, isAuth, isVendor, getStatusValues);
+router.put("/order/:orderId/status/:userId", requireSignin, isAuth, isVendor, updateOrderStatus);
 
 router.param("userId", userById);
 router.param("orderId", orderById);
