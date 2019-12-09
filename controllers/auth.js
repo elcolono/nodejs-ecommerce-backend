@@ -1,8 +1,10 @@
 const User = require("../models/user");
+const shortId = require("shortid");
 const jwt = require("jsonwebtoken"); // to generate signed token
 const expressJwt = require("express-jwt"); // for authorization check
 const { errorHandler } = require("../helpers/dbErrorHandler");
 const _ = require("lodash");
+const { OAuth2Client } = require("google-auth-library");
 // sendgrid
 const sgMail = require("@sendgrid/mail"); // SENDGRID_API_KEY
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
@@ -101,6 +103,59 @@ exports.signin = (req, res) => {
             user: { _id, firstname, lastname, email, role },
             expiresIn: 3600
         });
+    });
+};
+
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+exports.googleLogin = (req, res) => {
+    const idToken = req.body.tokenId;
+    client.verifyIdToken({ idToken, audience: process.env.GOOGLE_CLIENT_ID }).then(response => {
+        // console.log(response);
+        const { email_verified, given_name, family_name, email, jti } = response.payload;
+        console.log(email_verified, given_name, family_name, email, jti);
+        if (email_verified) {
+            User.findOne({ email }).exec((err, user) => {
+                if (user) {
+                    // console.log(user)
+                    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: "3600" });
+                    res.cookie("token", token, { expiresIn: "3600" });
+
+                    const { _id, firstname, lastname, email, role } = user;
+                    return res.json({
+                        token,
+                        user: { _id, firstname, lastname, email, role },
+                        expiresIn: 3600
+                    });
+                } else {
+                    let userId = shortId.generate();
+                    // let profile = `${process.env.CLIENT_URL}/profile/${username}`;
+                    const password = jti;
+                    const firstname = given_name;
+                    const lastname = family_name;
+                    console.log({ userId, email, firstname, lastname, password });
+                    const user = new User({ userId, firstname, lastname, email, password });
+                    user.save((err, data) => {
+                        if (err) {
+                            return res.status(400).json({
+                                error: JSON.stringify(err)
+                            });
+                        }
+                        const token = jwt.sign({ _id: data._id }, process.env.JWT_SECRET, { expiresIn: "1d" });
+                        res.cookie("token", token, { expiresIn: "3600" });
+                        const { _id, firstname, lastname, email, role } = data;
+                        return res.json({
+                            token,
+                            user: { _id, firstname, lastname, email, role },
+                            expiresIn: 3600
+                        });
+                    });
+                }
+            });
+        } else {
+            return res.status(400).json({
+                error: "Google login failed. Try again."
+            });
+        }
     });
 };
 
