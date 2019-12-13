@@ -3,7 +3,6 @@ const router = express.Router();
 
 const {
     create,
-    add,
     productById,
     read,
     remove,
@@ -20,7 +19,7 @@ const { userById } = require('../controllers/user');
 const { categoryBySlugId } = require('../controllers/category');
 
 router.get('/product/:productId', read);
-router.post('/product/create/:userId', requireSignin, isAuth, isVendor, add);
+router.post('/product/create/:userId', requireSignin, isAuth, isVendor, create);
 router.delete('/product/:productId/:userId', requireSignin, isAuth, isVendor, remove);
 router.put('/product/:productId/:userId', requireSignin, isAuth, isVendor, update);
 

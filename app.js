@@ -1,3 +1,5 @@
+const path = require('path');
+
 const express = require('express');
 const mongoose = require('mongoose');
 const morgan = require('morgan');
@@ -31,12 +33,12 @@ const fileStorage = multer.diskStorage({
 });
 
 const fileFilter = (req, file, cb) => {
-    if(file.mimetype === 'image/png' || file.mimetype === 'image/jpg' || file.mimetype === 'image/jpeg'){
-        cb(null, true)
+    if (file.mimetype === 'image/png' || file.mimetype === 'image/jpg' || file.mimetype === 'image/jpeg') {
+        cb(null, true);
     } else {
-        cb(null, false)
+        cb(null, false);
     }
-}
+};
 
 // db
 mongoose
@@ -49,9 +51,12 @@ mongoose
 // middlewares
 app.use(morgan('dev'));
 app.use(bodyParser.json());
-app.use(multer({ storage: fileStorage, fileFilter: fileFilter }).array('image'));
+app.use(multer({ storage: fileStorage, fileFilter: fileFilter }).array('images'));
 app.use(cookieParser());
 app.use(cors());
+
+// static served folders
+app.use('/api/images', express.static(path.join(__dirname, 'images')));
 
 // routes middleware
 app.use('/api', authRoutes);
