@@ -24,6 +24,33 @@ exports.read = (req, res) => {
     return res.json(req.product);
 };
 
+exports.add = (req, res) => {
+    const name = req.body.name;
+    const description = req.body.description;
+    const price = req.body.price;
+    const category = req.body.category;
+    const quantity = req.body.quantity;
+    const shipping = req.body.shipping;
+    const images = req.files.map(image => image.path);
+    const sold = req.body.sold;
+
+    if (images.length === 0) {
+        return res.status(400).json({
+            error: 'Please upload an valid image'
+        });
+    }
+    let product = new Product({name, description, price, category, quantity, shipping, images, sold});
+
+    product.save((err, result) => {
+        if (err) {
+            return res.status(400).json({
+                error: errorHandler(err)
+            });
+        }
+        res.json(result);
+    });
+};
+
 exports.create = (req, res) => {
     let form = new formidable.IncomingForm();
     form.keepExtensions = true;
