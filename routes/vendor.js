@@ -7,7 +7,7 @@ const { userById } = require("../controllers/user");
 const { read, update, listProducts, list, photo } = require("../controllers/vendor");
 
 router.get("/vendor/:userId", read);
-router.put("/vendor/:userId", requireSignin, isAuth, isVendor, update);
+router.put("/vendor/:userId", requireSignin, isAuth, update);
 router.get("/vendor/products/:userId", listProducts);
 router.get("/vendor/photo/:userId", photo);
 router.get("/vendors", list);

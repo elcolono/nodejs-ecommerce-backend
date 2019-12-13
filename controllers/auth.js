@@ -61,8 +61,8 @@ exports.signup = (req, res) => {
                 }
                 // user.salt = undefined;
                 // user.hashed_password = undefined;
-                const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: "3600" });
-                res.cookie("token", token, { expiresIn: "3600" });
+                const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+                res.cookie("token", token, { expiresIn: "1h" });
 
                 const { _id, firstname, lastname, email, role } = user;
                 return res.json({
@@ -93,8 +93,8 @@ exports.signin = (req, res) => {
                 error: "Email and password dont match"
             });
         }
-        const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: "3600" });
-        res.cookie("token", token, { expiresIn: "3600" });
+        const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+        res.cookie("token", token, { expiresIn: "1h" });
 
         const { _id, firstname, lastname, email, role } = user;
         return res.json({
@@ -116,8 +116,8 @@ exports.googleLogin = (req, res) => {
             User.findOne({ email }).exec((err, user) => {
                 if (user) {
                     // console.log(user)
-                    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: "3600" });
-                    res.cookie("token", token, { expiresIn: "3600" });
+                    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+                    res.cookie("token", token, { expiresIn: "1h" });
 
                     const { _id, firstname, lastname, email, role } = user;
                     return res.json({
@@ -139,8 +139,8 @@ exports.googleLogin = (req, res) => {
                                 error: JSON.stringify(err)
                             });
                         }
-                        const token = jwt.sign({ _id: data._id }, process.env.JWT_SECRET, { expiresIn: "1d" });
-                        res.cookie("token", token, { expiresIn: "3600" });
+                        const token = jwt.sign({ _id: data._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+                        res.cookie("token", token, { expiresIn: "1h" });
                         const { _id, firstname, lastname, email, role } = data;
                         return res.json({
                             token,
