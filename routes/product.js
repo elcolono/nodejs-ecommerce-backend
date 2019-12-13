@@ -19,9 +19,9 @@ const { userById } = require('../controllers/user');
 const { categoryBySlugId } = require('../controllers/category');
 
 router.get('/product/:productId', read);
-router.post('/product/create/:userId', requireSignin, isAuth, isVendor, create);
-router.delete('/product/:productId/:userId', requireSignin, isAuth, isVendor, remove);
-router.put('/product/:productId/:userId', requireSignin, isAuth, isVendor, update);
+router.post('/product/create/:userId', requireSignin, isAuth, create);
+router.delete('/product/:productId/:userId', requireSignin, isAuth, remove);
+router.put('/product/:productId/:userId', requireSignin, isAuth, update);
 
 router.get('/products', list);
 router.get('/products/related/:productId', listRelated);
