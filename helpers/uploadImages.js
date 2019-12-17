@@ -1,5 +1,7 @@
 const multer = require('multer');
 const fs = require('fs');
+const slugify = require('slugify');
+const shortId = require('shortid');
 
 const fileStorage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -14,7 +16,13 @@ const fileStorage = multer.diskStorage({
         });
     },
     filename: (req, file, cb) => {
-        cb(null, new Date().toISOString() + '-' + file.originalname);
+        console.log(file);
+        const { name } = req.body;
+        const imageId = shortId.generate();
+
+        slug = slugify(name).toLowerCase();
+
+        cb(null, slug + '-' + imageId + '.png');
     }
 });
 
