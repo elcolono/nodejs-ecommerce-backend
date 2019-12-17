@@ -3,10 +3,9 @@ const path = require('path');
 const express = require('express');
 const mongoose = require('mongoose');
 const morgan = require('morgan');
-const bodyParser = require('body-parser');
+// const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
-const multer = require('multer');
 require('dotenv').config();
 
 // import routes
@@ -22,24 +21,6 @@ const formRoutes = require('./routes/form');
 // app
 const app = express();
 
-// fileStorage
-const fileStorage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'images');
-    },
-    filename: (req, file, cb) => {
-        cb(null, new Date().toISOString() + '-' + file.originalname);
-    }
-});
-
-const fileFilter = (req, file, cb) => {
-    if (file.mimetype === 'image/png' || file.mimetype === 'image/jpg' || file.mimetype === 'image/jpeg') {
-        cb(null, true);
-    } else {
-        cb(null, false);
-    }
-};
-
 // db
 mongoose
     .connect(process.env.DATABASE, {
@@ -50,8 +31,7 @@ mongoose
 
 // middlewares
 app.use(morgan('dev'));
-app.use(bodyParser.json());
-app.use(multer({ storage: fileStorage, fileFilter: fileFilter }).array('images'));
+// app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(cors());
 

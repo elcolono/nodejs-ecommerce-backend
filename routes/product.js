@@ -21,10 +21,11 @@ const { createProductValidator } = require('../validator/product');
 
 const { requireSignin, isAuth, isAdmin, isVendor } = require('../controllers/auth');
 const { userById } = require('../controllers/user');
+const { uploadImages } = require('../helpers/uploadImages');
 const { categoryBySlugId } = require('../controllers/category');
 
 router.get('/product/:productId', read);
-router.post('/product/create/:userId', requireSignin, isAuth, createProductValidator, runValidation, create);
+router.post('/product/create/:userId', requireSignin, isAuth, uploadImages, createProductValidator, runValidation, create);
 router.delete('/product/:productId/:userId', requireSignin, isAuth, remove);
 router.put('/product/:productId/:userId', requireSignin, isAuth, update);
 

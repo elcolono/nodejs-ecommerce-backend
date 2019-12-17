@@ -26,7 +26,6 @@ exports.read = (req, res) => {
 
 exports.create = (req, res) => {
     let fields = req.body;
-    console.log(req.files);
     const images = req.files.map(image => image.path);
 
     if (images.length === 0) {
