@@ -14,12 +14,17 @@ const {
     image,
     listSearch
 } = require('../controllers/product');
+
+// validators
+const { runValidation } = require('../validator');
+const { createProductValidator } = require('../validator/product');
+
 const { requireSignin, isAuth, isAdmin, isVendor } = require('../controllers/auth');
 const { userById } = require('../controllers/user');
 const { categoryBySlugId } = require('../controllers/category');
 
 router.get('/product/:productId', read);
-router.post('/product/create/:userId', requireSignin, isAuth, create);
+router.post('/product/create/:userId', requireSignin, isAuth, createProductValidator, runValidation, create);
 router.delete('/product/:productId/:userId', requireSignin, isAuth, remove);
 router.put('/product/:productId/:userId', requireSignin, isAuth, update);
 

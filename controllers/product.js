@@ -30,9 +30,7 @@ exports.create = (req, res) => {
     const images = req.files.map(image => image.path);
 
     if (images.length === 0) {
-        return res.status(400).json({
-            error: 'Please upload an valid image'
-        });
+        return res.status(400).json('Please upload an valid image');
     }
 
     fields.images = images;
@@ -40,9 +38,7 @@ exports.create = (req, res) => {
 
     product.save((err, result) => {
         if (err) {
-            return res.status(400).json({
-                error: errorHandler(err)
-            });
+            return res.status(400).json(errorHandler(err));
         }
         res.json(result);
     });
