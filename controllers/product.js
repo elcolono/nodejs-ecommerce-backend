@@ -25,22 +25,54 @@ exports.read = (req, res) => {
 };
 
 exports.create = (req, res) => {
-    let fields = req.body;
-    const images = req.files.map(image => image.path);
-
-    if (images.length === 0) {
-        return res.status(400).json('Please upload an valid image');
-    }
-
-    fields.images = images;
-    let product = new Product(fields);
-
-    product.save((err, result) => {
+    let form = new formidable.IncomingForm();
+    form.keepExtensions = true;
+    form.parse(req, (err, fields, files) => {
         if (err) {
-            return res.status(400).json(errorHandler(err));
+            return res.status(400).json({
+                error: 'Image could not be uploaded'
+            });
         }
-        res.json(result);
+        // check for all fields
+        const { name, description, price, category, shippingTo } = fields;
+
+        if (!name || !description || !price || !category || !shippingTo ) {
+            return res.status(400).json({
+                error: 'All fields are required'
+            });
+        }
+
+        let product = new Product(fields);
+
+        product.save((err, result) => {
+            if (err) {
+                return res.status(400).json({
+                    error: errorHandler(err)
+                });
+            }
+            res.json(result);
+        });
     });
+
+    next();
+
+    // let fields = req.body;
+    // const images = req.files.map(image => image.path);
+
+    // if (images.length === 0) {
+    //     return res.status(400).json('Please upload an valid image');
+    // }
+
+    // fields.images = images;
+    // let product = new Product(fields);
+
+    // product.save((err, result) => {
+    //     if (err) {
+    //         return res.status(400).json(errorHandler(err));
+    //     }
+    //     res.json(result);
+    // });
+
 };
 
 exports.update = (req, res) => {

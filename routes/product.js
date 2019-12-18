@@ -25,7 +25,7 @@ const { uploadImages } = require('../helpers/uploadImages');
 const { categoryBySlugId } = require('../controllers/category');
 
 router.get('/product/:productId', read);
-router.post('/product/create/:userId', requireSignin, isAuth, uploadImages, createProductValidator, runValidation, create);
+router.post('/product/create/:userId', requireSignin, isAuth, createProductValidator, runValidation, create, uploadImages);
 router.delete('/product/:productId/:userId', requireSignin, isAuth, remove);
 router.put('/product/:productId/:userId', requireSignin, isAuth, update);
 
