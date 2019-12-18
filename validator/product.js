@@ -18,5 +18,9 @@ exports.createProductValidator = [
     check('category')
         .not()
         .isEmpty()
-        .withMessage('Category is required')
+        .withMessage('Category is required'),
+    check('shippingTo')
+        .not()
+        .isEmpty()
+        .withMessage('Shipping to is required')
 ];

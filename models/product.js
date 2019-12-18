@@ -30,21 +30,17 @@ const productSchema = new mongoose.Schema(
         quantity: {
             type: Number
         },
-        sold: {
-            type: Number,
-            default: 0
-        },
-        image: {
-            data: Buffer,
-            contentType: String
-        },
         images: {
             type: [String],
             required: true
         },
-        shipping: {
-            required: false,
-            type: Boolean
+        shippingTo: {
+            type: [String],
+            required: true
+        },
+        sold: {
+            type: Number,
+            default: 0
         }
     },
     { timestamps: true }
